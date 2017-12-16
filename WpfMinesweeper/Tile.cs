@@ -17,14 +17,14 @@ namespace WpfMinesweeper
     {
         public int Column { get; set; }
         public int Row { get; set; }
-        public char Value { get; set; }
-        public DisplayType Display { get; set; }   // 0=Hidden, 1=Visible, 2=Flag
+        public int Value { get; set; }
+        public DisplayType Display { get; set; }
 
         public Tile(int column, int row)
         {
             this.Column = column;
             this.Row = row;
-            this.Value = '0';
+            this.Value = 0;
             this.Display = DisplayType.Unknown;
         }
 

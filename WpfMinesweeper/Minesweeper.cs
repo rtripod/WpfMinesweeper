@@ -21,8 +21,8 @@ namespace WpfMinesweeper
         public GameState State { get; set; }
         public Tile[,] Grid { get; private set; }
         public int SweepCount { get; private set; }
+        public List<Tile> MineList { get; private set; }
 
-        static List<Tile> mines = new List<Tile>();
         static List<Tile> flags = new List<Tile>();
 
         // Initalise blank grid
@@ -45,12 +45,12 @@ namespace WpfMinesweeper
         // Check if the tile is a mine and check neighbouring tiles.
         public void checkTile(int sel_col, int sel_row)
         {
-            if (Grid[sel_col, sel_row].Value == 'X') // Mine selected = Game over
+            if (Grid[sel_col, sel_row].Value == 9) // Mine selected = Game over
             {
                 State = GameState.Lose;
             }
             sweepMine(sel_col, sel_row);
-            if (Grid[sel_col, sel_row].Value == '0')
+            if (Grid[sel_col, sel_row].Value == 0)
             {
                 recurseSweepNeighbour(sel_col, sel_row);
             }
@@ -76,7 +76,7 @@ namespace WpfMinesweeper
             {
             //    try
             //    {
-                    if ((Grid[neighbour.Column, neighbour.Row].Display != DisplayType.Swept) && (Grid[neighbour.Column, neighbour.Row].Value == '0'))
+                    if ((Grid[neighbour.Column, neighbour.Row].Display != DisplayType.Swept) && (Grid[neighbour.Column, neighbour.Row].Value == 0))
                     {
                         sweepMine(neighbour.Column, neighbour.Row);
                         recurseSweepNeighbour(neighbour.Column, neighbour.Row);
@@ -97,6 +97,7 @@ namespace WpfMinesweeper
         {
             Tile tempTile;
             int num_mines;
+            this.MineList = new List<Tile>();
 
             Random random = new Random();
 
@@ -108,9 +109,9 @@ namespace WpfMinesweeper
                 {
                     mineTile = new Tile(random.Next(0, ColumnCount), random.Next(0, RowCount));
                 }
-                while (mines.Contains(mineTile) || (sel_col == mineTile.Column && sel_row == mineTile.Row));
-                mines.Add(mineTile);
-                Grid[mineTile.Column, mineTile.Row].Value = 'X';
+                while (MineList.Any(item => (item.Equals(mineTile))) || (sel_col == mineTile.Column && sel_row == mineTile.Row));
+                MineList.Add(mineTile);
+                Grid[mineTile.Column, mineTile.Row].Value = 9;
             }
 
             // Initialise neighbouring mines count
@@ -118,25 +119,20 @@ namespace WpfMinesweeper
             {
                 for (int rr = 0; rr < RowCount; rr++)
                 {
-                    if (Grid[cc, rr].Value != 'X')
+                    if (Grid[cc, rr].Value != 9)
                     {
                         tempTile = new Tile(cc, rr);
                         num_mines = 0;
-
-                        //foreach (Tile neighbour in tempTile.getUnvalidatedNeighbours())
+                        
                         foreach (Tile neighbour in neighbouringTiles(tempTile.Column, tempTile.Row))
                         {
-                            //try
-                            //{
-                                if (Grid[neighbour.Column, neighbour.Row].Value == 'X')
-                                {
-                                    num_mines++;
-                                }
-                            //}
-                            //catch (System.IndexOutOfRangeException e) { } // Do nothing
+                            if (Grid[neighbour.Column, neighbour.Row].Value == 9)
+                            {
+                                num_mines++;
+                            }
                         }
 
-                        Grid[cc, rr].Value = num_mines.ToString().ToCharArray()[0];
+                        Grid[cc, rr].Value = num_mines;
                     }
                 }
             }

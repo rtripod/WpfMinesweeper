@@ -113,7 +113,11 @@ namespace WpfMinesweeper
                         //}
                         if (ms.Grid[cc, rr].Display == DisplayType.Swept)
                         {
-                            buttonGrid[cc, rr].Content = ms.Grid[cc, rr].Value;
+                            buttonGrid[cc, rr].Content = (ms.Grid[cc, rr].Value == 9)
+                                ? "X"
+                                : (ms.Grid[cc, rr].Value == 0)
+                                    ? ""
+                                    : ms.Grid[cc, rr].Value.ToString();
                             buttonGrid[cc, rr].IsEnabled = false;
                         }
                         else if (ms.Grid[cc, rr].Display != DisplayType.Flagged)
